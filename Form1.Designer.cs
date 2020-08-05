@@ -71,6 +71,7 @@
             this.checkIsScanFolder.TabIndex = 1;
             this.checkIsScanFolder.Text = "Включая вложенные папки";
             this.checkIsScanFolder.UseVisualStyleBackColor = true;
+            this.checkIsScanFolder.CheckedChanged += new System.EventHandler(this.checkIsScanFolder_CheckedChanged);
             // 
             // textBox1
             // 
@@ -88,7 +89,6 @@
             this.label2.Size = new System.Drawing.Size(250, 23);
             this.label2.TabIndex = 3;
             this.label2.Text = "По указанному пути обнаружено:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
@@ -152,6 +152,7 @@
             this.btnOpenTempFolder.TabIndex = 12;
             this.btnOpenTempFolder.Text = "...";
             this.btnOpenTempFolder.UseVisualStyleBackColor = true;
+            this.btnOpenTempFolder.Click += new System.EventHandler(this.btnOpenTempFolder_Click);
             // 
             // btnConvert
             // 
