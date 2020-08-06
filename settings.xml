@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<extensions>
+  <extension name="mp3">
+    <pattern>.mp3</pattern>
+    <isUse>true</isUse>
+  </extension>
+  <extension name="flac">
+    <pattern>.flac</pattern>
+    <isUse>true</isUse>
+  </extension>
+  <extension name="wav">
+    <pattern>.wav</pattern>
+    <isUse>true</isUse>
+  </extension>
+</extensions>

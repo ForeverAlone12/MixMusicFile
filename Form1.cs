@@ -37,7 +37,7 @@ namespace MixMusicFile
             try
             {
                 TmpFolder = new Folder(tmp_dir);
-            }catch(UnauthorizedAccessException argNullEx)
+            }catch(Exception argNullEx)
             {
                 MessageBox.Show(argNullEx.ToString());
             }
@@ -74,7 +74,7 @@ namespace MixMusicFile
             }
 
 
-    lblCountFiles.Text = FolderWithMusic.CountFiles.ToString();
+            lblCountFiles.Text = FolderWithMusic.CountFiles.ToString();
             lblCountFiles.Visible = true;
 
             lblFilesSize.Text = byteToString(FolderWithMusic.SizeFiles);

@@ -12,7 +12,7 @@ namespace MixMusicFile
         /// <summary>
         /// Полный путь до папки.
         /// </summary>
-        public String FullPath { get; set; }
+        public String FullPath { get; private set; }
                      
         /// <summary>
         /// Количество файлов папке.
@@ -29,16 +29,22 @@ namespace MixMusicFile
         /// </summary>
         public long FreeSpaceOnDisk { get; set; }
 
+        private XMLReader xml = null;
+
+        private Random rnd;
+
         /// <summary>
         /// Инициализация данных.
         /// </summary>
         /// <param name="pathToFolder">Полный путь до папки</param>
         public Folder(String pathToFolder)
         {
+            rnd = new Random();
+            xml = new XMLReader();
             FullPath = pathToFolder;
             CountFiles = getCountFilesInFolder(FullPath);
             SizeFiles = getSizeFilesInFolder(FullPath);
-            FreeSpaceOnDisk = getFreeSpaceOnDisk(FullPath);
+            FreeSpaceOnDisk = getFreeSpaceOnDisk(FullPath);            
         }
 
         /// <summary>
@@ -51,14 +57,23 @@ namespace MixMusicFile
             try
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(pathToFolder);
-
+                 
                 if (directoryInfo.Exists)
                 {
-                    return directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).Length;
+                    int countFiles = 0;
+                    foreach (string extension in xml.MusicExtention)
+                    {
+                        countFiles += directoryInfo.GetFiles("*" + extension, SearchOption.TopDirectoryOnly).Length;
+                    }
+                    return countFiles;
                 }
                 return -1;
             }
             catch (UnauthorizedAccessException)
+            {
+                throw;
+            }
+            catch (ArgumentException)
             {
                 throw;
             }
@@ -79,7 +94,10 @@ namespace MixMusicFile
 
                 foreach (FileInfo file in files)
                 {
-                    sizeFiles += file.Length;
+                    if (xml.MusicExtention.Contains(file.Extension))
+                    {
+                        sizeFiles += file.Length;
+                    }                                       
                 }
                 /*
                 DirectoryInfo[] folders = drInfo.GetDirectories();
@@ -113,12 +131,15 @@ namespace MixMusicFile
         /// <param name="destFolderPath">Новое местоположение</param>
         public void moveFilesToFolder(String destFolderPath) 
         {
-            string[] files = Directory.GetFiles(FullPath);
             try
             {
-                 foreach (string file in files)
+                 foreach (FileInfo file in new DirectoryInfo(FullPath).GetFiles())
                  {
-                    File.Move(file, destFolderPath + "\\" + Path.GetFileName(file));
+                    if (xml.MusicExtention.Contains(file.Extension))
+                    {
+                        File.Move(file.FullName, destFolderPath + "\\" + file.Name);
+                    }
+                    
                  }
             }
             catch (IOException)
@@ -134,26 +155,31 @@ namespace MixMusicFile
         {
             string newName = "";
 
-            String regWordsInRoundBrackets = @"\([^)]+\)";
-            String regWordsInSquareBrackets = @"\[[^)]+\]";
-            String regNotLettersAndSpace = @"[^A-zА-я\s]";
+            String regNotLettersAndDigit = @"[^A-Za-zА-Яа-я\d]*";
             String regUnderscore = @"_";
+            String regOnlyLettersOnStartLine = @"^[^a-zA-Zа-яА-Я]*";
             DirectoryInfo drInfo = new DirectoryInfo(FullPath);        
             try
             {
                 foreach (FileInfo file in drInfo.GetFiles())
-                {                    
+                {
                     newName = Path.GetFileNameWithoutExtension(file.Name);
-                    newName = Regex.Replace(newName, regWordsInRoundBrackets, String.Empty);
-                    newName = Regex.Replace(newName, regWordsInSquareBrackets, String.Empty);
-                    newName = Regex.Replace(newName, regNotLettersAndSpace, String.Empty);
-                    newName = Regex.Replace(newName, regUnderscore, String.Empty);
+                    Console.WriteLine("Имя файла: {0}", newName);
+
+                    newName = Regex.Replace(newName, regOnlyLettersOnStartLine, String.Empty);
+                    newName = Regex.Replace(newName, regUnderscore, " ");
+                    newName = Regex.Replace(newName, regNotLettersAndDigit, String.Empty);
+                    Console.WriteLine("Убрали все лишние символы: {0}", newName);
+
+                    newName = rnd.Next(0, drInfo.GetFiles().Length).ToString() + newName;
+                    Console.WriteLine("Добавили номер: {0}", newName);
+
                     newName = Path.Combine(file.DirectoryName, newName + file.Extension);
-                    File.Move(file.FullName, newName );
+                    File.Move(file.FullName, newName);
                 }
-            } catch (Exception e)
+            } catch (Exception)
             {
-                Console.WriteLine("Ошибка: {0}", e.ToString());
+                throw;
             }       
         }
 
