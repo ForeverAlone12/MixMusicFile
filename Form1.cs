@@ -13,21 +13,19 @@ namespace MixMusicFile
 {
     public partial class Form1 : Form
     {
-        private string dir_with_music = "";
         private string tmp_dir = "";
 
         private string tmp_windows = @"C:\";
         private string tmp_linux = "/tmp";
 
-        private long files_size = -1;
-        private long free_spaces = -1;
+        private Folder FolderWithMusic;
+        private Folder TmpFolder;
 
 
         public Form1()
         {
             InitializeComponent();
             getOSName();
-            getFreeSpace();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -36,98 +34,74 @@ namespace MixMusicFile
             lblCountFiles.Visible = false;
             lblFilesSize.Visible = false;
             textBox2.Text = tmp_dir;
+            try
+            {
+                TmpFolder = new Folder(tmp_dir);
+            }catch(UnauthorizedAccessException argNullEx)
+            {
+                MessageBox.Show(argNullEx.ToString());
+            }
+           
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnMixMusic_Click(object sender, EventArgs e)
         {
-            copyFileToTmpDir();
+            try
+            {
+                FolderWithMusic.moveFilesToFolder(TmpFolder.FullPath);
+                TmpFolder.renameFilesInFolder();
+                TmpFolder.moveFilesToFolder(FolderWithMusic.FullPath);
+            }catch (IOException ioEx)
+            {
+                MessageBox.Show(ioEx.ToString());
+            }
+            
         }
 
         private void btnOpenFolderWithMusic_Click(object sender, EventArgs e)
         {
             if (folderBrowserDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
-
-            dir_with_music = folderBrowserDialog1.SelectedPath;
             
-            textBox1.Text = dir_with_music;
-            getCountAndSizeFilesInFolder();
-        }
+            textBox1.Text = folderBrowserDialog1.SelectedPath;
 
-        private void getCountAndSizeFilesInFolder()
-        {
-            int count_files = 0;
-            
-            DirectoryInfo directoryInfo = new DirectoryInfo(dir_with_music);
-
-            SearchOption searchOptions = checkIsScanFolder.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            if (directoryInfo.Exists)
+            try
             {
-                count_files = directoryInfo.GetFiles("*.*", searchOptions).Length;
+                FolderWithMusic = new Folder(folderBrowserDialog1.SelectedPath);
+            }catch(UnauthorizedAccessException argNullEx)
+            {
+                MessageBox.Show(argNullEx.ToString());
             }
 
-            lblCountFiles.Text = count_files.ToString();
+
+    lblCountFiles.Text = FolderWithMusic.CountFiles.ToString();
             lblCountFiles.Visible = true;
 
-            lblFilesSize.Text = byteToString(getSizeFileInFolder(dir_with_music));
+            lblFilesSize.Text = byteToString(FolderWithMusic.SizeFiles);
             lblFilesSize.Visible = true;
-        } 
-
-        //private void getSizeFile
+        }     
 
         private void getOSName()
-        {
-           
+        {           
             var name = (from x in new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
                         select x.GetPropertyValue("Caption")).FirstOrDefault();
             tmp_dir =  name != null ? tmp_windows : tmp_linux;
         }
 
-        private void getFreeSpace()
+        /// <summary>
+        /// ??? Размер файл(а/ов) в произвольных величинах ???
+        /// </summary>
+        /// <param name="byteCount">Размер файл(а/ов) в байтах </param>
+        /// <returns></returns>
+        public String byteToString(long byteCount)
         {
-            DriveInfo di = new DriveInfo(tmp_dir);
-            free_spaces = di.AvailableFreeSpace;
-            lblFreeSpace.Text = byteToString(di.AvailableFreeSpace);
-        }
-
-        private String byteToString(long byteCount)
-        {
-            string[] suf = { "байт", "Кбайт", "Мбайт", "Гбайт", "Тбайт", "Пбайт", "Эбайт" }; 
+            string[] suf = { "байт", "Кбайт", "Мбайт", "Гбайт", "Тбайт" };
             if (byteCount == 0)
                 return "Нет свободного места на диске";
             long bytes = Math.Abs(byteCount);
             int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
             double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-            return (Math.Sign(byteCount) * num).ToString() +" "+suf[place];
-        }
-
-        private void copyFileToTmpDir()
-        {
-            
-        }
-
-        private long getSizeFileInFolder(String path_folder)
-        {
-            long size_files = 0;
-            DirectoryInfo DrInfo = new DirectoryInfo(path_folder);
-            FileInfo[] Fi = DrInfo.GetFiles();
-
-            foreach (FileInfo fl in Fi)
-            {
-                size_files += fl.Length;
-            }
-
-            if (checkIsScanFolder.Checked)
-            {
-                DirectoryInfo[] folders = DrInfo.GetDirectories();
-                foreach (DirectoryInfo folder in folders)
-                {
-                    size_files += getSizeFileInFolder(path_folder + "\\" + folder.Name);
-                }
-            }
-
-            files_size = size_files;
-            return size_files;
+            return (Math.Sign(byteCount) * num).ToString() + " " + suf[place];
         }
 
         private void btnOpenTempFolder_Click(object sender, EventArgs e)
@@ -137,17 +111,17 @@ namespace MixMusicFile
             if (folderBrowserDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
 
+            TmpFolder = new Folder(folderBrowserDialog1.SelectedPath);
 
-            tmp_dir = folderBrowserDialog1.SelectedPath;
+         
+            textBox2.Text = folderBrowserDialog1.SelectedPath;      
 
-            textBox2.Text = tmp_dir;                       
-            getFreeSpace();
-            lblIsFull.Visible = free_spaces < files_size ? true : false;
+            lblIsFull.Visible = TmpFolder.FreeSpaceOnDisk < FolderWithMusic.SizeFiles ? true : false;
         }
 
         private void checkIsScanFolder_CheckedChanged(object sender, EventArgs e)
         {
-            getCountAndSizeFilesInFolder();
+          //  getCountAndSizeFilesInFolder();
         }
     }
 }

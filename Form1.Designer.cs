@@ -39,7 +39,7 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.btnOpenFolderWithMusic = new System.Windows.Forms.Button();
             this.btnOpenTempFolder = new System.Windows.Forms.Button();
-            this.btnConvert = new System.Windows.Forms.Button();
+            this.btnMixMusic = new System.Windows.Forms.Button();
             this.lblIsFull = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -154,15 +154,15 @@
             this.btnOpenTempFolder.UseVisualStyleBackColor = true;
             this.btnOpenTempFolder.Click += new System.EventHandler(this.btnOpenTempFolder_Click);
             // 
-            // btnConvert
+            // btnMixMusic
             // 
-            this.btnConvert.Location = new System.Drawing.Point(22, 251);
-            this.btnConvert.Name = "btnConvert";
-            this.btnConvert.Size = new System.Drawing.Size(146, 30);
-            this.btnConvert.TabIndex = 13;
-            this.btnConvert.Text = "Конвертировать";
-            this.btnConvert.UseVisualStyleBackColor = true;
-            this.btnConvert.Click += new System.EventHandler(this.button3_Click);
+            this.btnMixMusic.Location = new System.Drawing.Point(22, 251);
+            this.btnMixMusic.Name = "btnMixMusic";
+            this.btnMixMusic.Size = new System.Drawing.Size(181, 30);
+            this.btnMixMusic.TabIndex = 13;
+            this.btnMixMusic.Text = "Перемешать музыку";
+            this.btnMixMusic.UseVisualStyleBackColor = true;
+            this.btnMixMusic.Click += new System.EventHandler(this.btnMixMusic_Click);
             // 
             // lblIsFull
             // 
@@ -191,7 +191,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(195, 255);
+            this.label4.Location = new System.Drawing.Point(209, 255);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(207, 23);
             this.label4.TabIndex = 16;
@@ -200,7 +200,7 @@
             // lblFreeSpace
             // 
             this.lblFreeSpace.AutoSize = true;
-            this.lblFreeSpace.Location = new System.Drawing.Point(408, 255);
+            this.lblFreeSpace.Location = new System.Drawing.Point(422, 255);
             this.lblFreeSpace.Name = "lblFreeSpace";
             this.lblFreeSpace.Size = new System.Drawing.Size(52, 23);
             this.lblFreeSpace.TabIndex = 17;
@@ -215,7 +215,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.lblFilesSize);
             this.Controls.Add(this.lblIsFull);
-            this.Controls.Add(this.btnConvert);
+            this.Controls.Add(this.btnMixMusic);
             this.Controls.Add(this.btnOpenTempFolder);
             this.Controls.Add(this.btnOpenFolderWithMusic);
             this.Controls.Add(this.textBox2);
@@ -250,7 +250,7 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button btnOpenFolderWithMusic;
         private System.Windows.Forms.Button btnOpenTempFolder;
-        private System.Windows.Forms.Button btnConvert;
+        private System.Windows.Forms.Button btnMixMusic;
         private System.Windows.Forms.Label lblIsFull;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
